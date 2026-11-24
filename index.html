@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>L1rik</title>
+<meta name="description" content="L1rik — Automated trading robots for MetaTrader 5: gold and crypto.">
+<meta name="theme-color" content="#070b1a">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="icon" href="/icon-192.png" sizes="192x192" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.webmanifest">
+<meta name="apple-mobile-web-app-title" content="L1rik">
+<style>
+/* VOICE: calm, confident, small. IDEA: a trading terminal at night. COLOUR: deep navy, violet accent, green/red ticks. TYPE: system sans. */
+:root{--bg:#070b1a;--card:#0e1530;--line:#232c52;--ink:#eef2ff;--mut:#8e9ac0;--acc:#7c5cff;--acc2:#a78bfa;--grn:#26d086}
+*{box-sizing:border-box;margin:0}
+body{background:radial-gradient(1200px 600px at 80% -10%,#2a1f6b55,transparent),var(--bg);color:var(--ink);
+ font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;min-height:100vh;display:flex;flex-direction:column}
+.wrap{width:min(1100px,100%);margin:0 auto;padding:22px max(4vw,16px)}
+header{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:24px;letter-spacing:.2px;color:var(--ink);text-decoration:none}.logo span{color:var(--acc2)}.logo svg{width:36px;height:36px;flex:none}
+#splash{position:fixed;inset:0;z-index:99;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;
+ background:radial-gradient(600px 400px at 50% 40%,#2a1f6b88,transparent),var(--bg);animation:sOut .45s ease 1.25s forwards}
+#splash svg{width:min(28vw,120px);height:auto;filter:drop-shadow(0 18px 50px #7c5cff66);animation:sIn .7s cubic-bezier(.2,.8,.2,1.2) both}
+#splash b{font-size:clamp(26px,6vw,36px);letter-spacing:.5px;opacity:0;animation:sTx .5s ease .35s forwards}#splash b span{color:var(--acc2)}
+@keyframes sIn{from{transform:scale(.6) rotate(-8deg);opacity:0}to{transform:none;opacity:1}}
+@keyframes sTx{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes sOut{to{opacity:0;visibility:hidden}}
+@media (prefers-reduced-motion:reduce){#splash{animation:sOut .2s ease .4s forwards}#splash svg,#splash b{animation:none;opacity:1}}
+.lang{display:flex;gap:6px}.lang button{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:9px;
+ padding:7px 11px;font:600 13px inherit;cursor:pointer;min-width:44px;min-height:36px}.lang button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+main{flex:1;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:40px;align-items:center;padding-block:clamp(30px,7vw,90px)}
+h1{font-size:clamp(34px,5vw,54px);line-height:1.05;text-wrap:balance}h1 em{font-style:normal;color:var(--acc2)}
+.lead{color:var(--mut);font-size:18px;margin:18px 0 26px;max-width:34em}
+.pills{display:flex;flex-wrap:wrap;gap:8px}.pill{border:1px solid var(--line);background:#0e153099;border-radius:999px;padding:7px 14px;font-size:14px}
+.soon{display:inline-flex;align-items:center;gap:8px;margin-top:28px;background:linear-gradient(90deg,#5b3fe0,#8b5cf6);
+ border-radius:12px;padding:12px 18px;font-weight:700}.soon i{width:9px;height:9px;border-radius:50%;background:var(--grn);box-shadow:0 0 0 0 #26d08680;animation:p 2s infinite}
+@keyframes p{70%{box-shadow:0 0 0 10px #26d08600}100%{box-shadow:0 0 0 0 #26d08600}}
+@media (prefers-reduced-motion:reduce){.soon i{animation:none}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;box-shadow:0 30px 80px #0008}
+.panel .t{display:flex;justify-content:space-between;color:var(--mut);font-size:13px;margin-bottom:10px}
+svg{width:100%;height:auto;display:block}
+.rows{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:12px}
+.rows div{background:#0a1029;border:1px solid var(--line);border-radius:12px;padding:10px}.rows b{display:block;font-size:15px}.rows small{color:var(--mut);font-size:12px}
+footer{border-top:1px solid var(--line);color:var(--mut);font-size:13px}
+footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:28px;align-items:center}.btns .soon{margin-top:0}
+.cta{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--acc2);color:var(--ink);text-decoration:none;border-radius:12px;padding:11px 18px;font-weight:700}
+.cta:hover{background:#7c5cff22}
+.sec{padding-block:clamp(36px,6vw,70px);border-top:1px solid var(--line)}
+.sec h2{font-size:clamp(26px,3.4vw,36px);line-height:1.15;margin-bottom:10px;text-wrap:balance}
+.sec .sub{color:var(--mut);max-width:44em;margin-bottom:26px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px}
+.card b{display:block;font-size:17px;margin-bottom:6px}.card p{color:var(--mut);font-size:15px}
+.bt{display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:14px}
+.tag{display:inline-block;background:#f5b94222;color:#f5c66b;border:1px solid #f5b94255;border-radius:8px;padding:3px 10px;font-size:13px;font-weight:700;margin-bottom:12px}
+.bars{display:flex;align-items:flex-end;gap:10px;height:190px;margin:8px 0 6px;border-bottom:1px solid var(--line)}
+.bars div{flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;height:100%}
+.bars i{display:block;width:100%;max-width:46px;background:linear-gradient(180deg,var(--acc2),var(--acc));border-radius:6px 6px 0 0}
+.bars em{font-style:normal;font-size:12px;color:var(--ink);margin-bottom:4px;white-space:nowrap}
+.yrs{display:flex;gap:10px}.yrs span{flex:1;text-align:center;font-size:12px;color:var(--mut)}
+.stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:14px}
+.stats div{background:#0a1029;border:1px solid var(--line);border-radius:12px;padding:10px}.stats b{display:block;font-size:18px}.stats small{color:var(--mut);font-size:12px}
+.note{color:var(--mut);font-size:13px;margin-top:12px}
+.warn{margin-top:18px;background:#0e1530;border:1px solid #f5b94255;border-left:4px solid #f5b942;border-radius:12px;padding:14px 16px;font-size:15px}
+.contact{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;max-width:720px}
+.contact a{display:block;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;color:var(--ink);text-decoration:none}
+.contact a:hover{border-color:var(--acc2)}.contact small{display:block;color:var(--mut);font-size:13px}.contact b{font-size:18px}
+.mo{margin-bottom:14px}.mo .hd{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:10px;margin-bottom:6px}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}.tabs button{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:9px;padding:7px 12px;font:600 13px inherit;cursor:pointer;min-height:36px}
+.tabs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+.mstats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:12px 0}
+.mstats div{background:#0a1029;border:1px solid var(--line);border-radius:12px;padding:10px}.mstats b{display:block;font-size:18px}.mstats small{color:var(--mut);font-size:12px}
+.mgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px;margin-top:12px}
+.mgrid div{border-radius:10px;padding:7px 8px;border:1px solid var(--line);background:#0a1029}.mgrid small{display:block;color:var(--mut);font-size:11px}
+.mgrid b{font-size:14px}.mgrid .p b{color:var(--grn)}.mgrid .n b{color:#ff6b7a}.mgrid i{font-style:normal;font-size:11px;color:var(--mut)}
+@media(max-width:600px){.mstats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:900px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}.bt{grid-template-columns:1fr}}
+@media(max-width:760px){main{grid-template-columns:1fr;gap:28px}.lead{font-size:17px}.contact{grid-template-columns:1fr}}
+@media(max-width:480px){.cards{grid-template-columns:1fr}.bars{gap:5px}.bars em{font-size:10px}}
+.prod{grid-template-columns:repeat(2,minmax(0,1fr))}.pn{display:block;font-size:20px;margin-bottom:6px}.pr{display:flex;justify-content:space-between;align-items:baseline;margin:14px 0;padding-top:12px;border-top:1px solid var(--line)}.pr small{color:var(--mut)}.buy{width:100%;justify-content:center;background:var(--acc);border-color:var(--acc);color:#fff}.pay{margin-top:14px}@media(max-width:700px){.prod{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="splash" aria-hidden="true"><svg viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="lg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f2fd6"/></linearGradient></defs><rect width="512" height="512" rx="110" fill="url(#lg2)"/><path d="M150 128v232h120M318 190l46-40v210" fill="none" stroke="#fff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><circle cx="396" cy="396" r="22" fill="#26d086"/></svg><b>L1rik<span>.</span></b></div>
+<div class="wrap"><header>
+ <a class="logo" href="/" aria-label="L1rik"><svg viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f2fd6"/></linearGradient></defs><rect width="512" height="512" rx="110" fill="url(#lg)"/><path d="M150 128v232h120M318 190l46-40v210" fill="none" stroke="#fff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><circle cx="396" cy="396" r="22" fill="#26d086"/></svg><b>L1rik<span>.</span></b></a>
+ <div class="lang" role="group" aria-label="Language"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div>
+</header></div>
+<div class="wrap" style="flex:1;display:flex"><main>
+ <section>
+  <h1 data-k="h1"><em>Automated trading</em> for gold and crypto</h1>
+  <p class="lead" data-k="lead">L1rik is a trading robot for MetaTrader 5. It runs around the clock on XAUUSD, BTCUSD and ETHUSD, protects every trade with a stop loss and reports results in Telegram and your personal dashboard. It is not a get-rich-quick tool — it is a <b>long-term system</b> that follows the same rules year after year.</p>
+  <div class="pills"><span class="pill" data-k="p1">MetaTrader 5</span><span class="pill" data-k="p2">XAUUSD · BTCUSD · ETHUSD</span><span class="pill" data-k="p3">Telegram control</span><span class="pill" data-k="p4">Risk limits</span></div>
+  <div class="btns"><div class="soon"><i></i><span data-k="soon">Personal dashboard and sales coming soon</span></div><a class="cta" href="#aloqa" data-k="ctab">Contact us</a></div>
+ </section>
+ <section class="panel" aria-label="Sample chart">
+  <div class="t"><span data-k="chart">Decorative chart — not real results</span></div>
+  <svg viewBox="0 0 400 180" role="img" aria-hidden="true">
+   <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c5cff" stop-opacity=".45"/><stop offset="1" stop-color="#7c5cff" stop-opacity="0"/></linearGradient></defs>
+   <g stroke="#232c52" stroke-width="1"><line x1="0" y1="45" x2="400" y2="45"/><line x1="0" y1="90" x2="400" y2="90"/><line x1="0" y1="135" x2="400" y2="135"/></g>
+   <path d="M0 160 L30 152 L60 150 L90 138 L120 141 L150 126 L180 120 L210 108 L240 112 L270 92 L300 80 L330 66 L360 50 L400 30 L400 180 L0 180Z" fill="url(#g)"/>
+   <path d="M0 160 L30 152 L60 150 L90 138 L120 141 L150 126 L180 120 L210 108 L240 112 L270 92 L300 80 L330 66 L360 50 L400 30" fill="none" stroke="#a78bfa" stroke-width="3" stroke-linejoin="round"/>
+  </svg>
+  <div class="rows"><div><b>24/7</b><small data-k="r1">automated</small></div><div><b>SL</b><small data-k="r2">on every trade</small></div><div><b>2FA</b><small data-k="r3">protection</small></div></div>
+ </section>
+</main></div>
+<div class="wrap"><section class="sec" aria-labelledby="h-sys">
+ <h2 id="h-sys" data-k="s1h">A long-term, systematic approach</h2>
+ <p class="sub" data-k="s1p">L1rik opens and closes every trade by fixed, predefined rules. Results are judged over months and years, not a single day or week.</p>
+ <div class="cards">
+  <div class="card"><b data-k="c1h">Fixed rules</b><p data-k="c1p">Entry, exit and risk are set in advance. No emotion, no rushing, no guessing.</p></div>
+  <div class="card"><b data-k="c2h">Long term</b><p data-k="c2p">Some days and months close at a loss — that is normal. The system is built for the overall result over years.</p></div>
+  <div class="card"><b data-k="c3h">Risk control</b><p data-k="c3p">A stop loss on every trade, plus daily loss and overall drawdown limits.</p></div>
+  <div class="card"><b data-k="c4h">Three assets</b><p data-k="c4p">Gold, Bitcoin and Ethereum — risk is not tied to a single market.</p></div>
+ </div>
+</section>
+<section class="sec" aria-labelledby="h-bt">
+ <h2 id="h-bt" data-k="s2h">Backtest results</h2>
+ <p class="sub" data-k="s2p">Tested in the MetaTrader 5 strategy tester on Exness historical data.</p>
+ <div class="card mo"><div class="hd"><div><span class="tag" data-k="mtag">BACKTEST · SIMULATION</span>
+   <b data-k="mh">Month by month · $5,000 deposit · January 2025 – October 2026</b></div>
+   <div class="tabs" role="group" aria-label="Asset"><button data-s="ALL" class="on" data-k="tall">All</button><button data-s="XAU">XAUUSD</button><button data-s="BTC">BTCUSD</button><button data-s="ETH">ETHUSD</button></div></div>
+  <div class="mstats" id="mst"></div>
+  <svg id="mch" viewBox="0 0 800 220" role="img" aria-label="Balans grafigi"></svg>
+  <div class="mgrid" id="mgr"></div>
+  <p class="note" data-k="mnote">Computer simulation on Exness historical data. Fixed lot (based on $5,000, profits not reinvested), commission and swap not included. Cent account ($500) results will be added later.</p>
+ </div>
+ <div class="bt">
+  <div class="card"><span class="tag">BACKTEST</span>
+   <b data-k="b1h">XAUUSD · 2020–2026 · profit by year</b>
+   <div class="bars" role="img" aria-label="2020: +5959, 2021: +3925, 2022: +5291, 2023: +2985, 2024: +3764, 2025: +14662, 2026: +19644 USD"><div><em>+$6.0k</em><i style="height:26%"></i></div><div><em>+$3.9k</em><i style="height:17%"></i></div><div><em>+$5.3k</em><i style="height:23%"></i></div><div><em>+$3.0k</em><i style="height:13%"></i></div><div><em>+$3.8k</em><i style="height:16%"></i></div><div><em>+$14.7k</em><i style="height:63%"></i></div><div><em>+$19.6k</em><i style="height:85%"></i></div></div>
+   <div class="yrs"><span>2020</span><span>2021</span><span>2022</span><span>2023</span><span>2024</span><span>2025</span><span>2026*</span></div>
+   <div class="stats"><div><b>+562%</b><small data-k="st1">total over 6.9 years</small></div><div><b>8.2%</b><small data-k="st2">max drawdown</small></div><div><b>3.08</b><small data-k="st3">profit factor</small></div><div><b>2 723</b><small data-k="st4">trades</small></div></div>
+   <p class="note" data-k="n1">Starting balance $10,000, fixed lot (profits not reinvested). *2026 — January 1 to November.</p>
+  </div>
+  <div class="card"><span class="tag">BACKTEST</span>
+   <b data-k="b2h">XAUUSD + BTCUSD + ETHUSD · 2026</b>
+   <div class="stats"><div><b>+$54 083</b><small data-k="st5">net profit</small></div><div><b>8.1%</b><small data-k="st2">max drawdown</small></div><div><b>3.24</b><small data-k="st3">profit factor</small></div><div><b>78.7%</b><small data-k="st6">winning trades</small></div></div>
+   <p class="note" data-k="n2">January 1 – November 17, 2026, starting balance $10,000, fixed lot, 3,428 trades. Also checked with random reshuffling (Monte Carlo).</p>
+  </div>
+ </div>
+ <div class="warn" data-k="warn"><b>Important:</b> these figures are a backtest — the robot tested on historical data, not a live account result. Live results may differ because of spread, slippage and execution. Live account results will be published on this page later.</div>
+</section>
+<section class="sec" id="robots" aria-labelledby="h-pr">
+ <h2 id="h-pr" data-k="prh">Our robots</h2>
+ <p class="sub" data-k="prp">Two MetaTrader 5 robots. Each one is tested on history since 2020 with a Monte Carlo check before release.</p>
+ <div class="cards prod">
+  <div class="card"><span class="tag">XAUUSD · BTCUSD · ETHUSD</span><b class="pn">L1rik Falcon</b><p data-k="g1p">Robot for gold, Bitcoin and Ethereum, built for steady long-term growth. Stop-loss on every trade, daily loss and drawdown limits.</p>
+   <div class="pr"><small data-k="prl">Price</small><b data-k="prs">Coming soon</b></div>
+   <a class="cta buy" href="#pay" data-k="buy">Buy with crypto</a></div>
+  <div class="card"><span class="tag">XAUUSD · BTCUSD · ETHUSD</span><b class="pn">L1rik Strix</b><p data-k="s1p">Day-breakout robot for gold, Bitcoin and Ethereum. Risk is spread across three markets, every trade protected by stop-loss.</p>
+   <div class="pr"><small data-k="prl">Price</small><b data-k="prs">Coming soon</b></div>
+   <a class="cta buy" href="#pay" data-k="buy">Buy with crypto</a></div>
+ </div>
+ <div class="card pay" id="pay"><b data-k="payh">Payment — crypto only</b><p data-k="payp">USDT (TRC-20, BEP-20), BTC and ETH through a secure crypto payment page. Online checkout opens soon — until then order through our Telegram bot @l1rikcontrolbot.</p></div>
+</section>
+<section class="sec" id="aloqa" aria-labelledby="h-c">
+ <h2 id="h-c" data-k="s3h">Contact</h2>
+ <p class="sub" data-k="s3p">Have a question? Write to us and we will reply.</p>
+ <div class="contact">
+  <a href="https://t.me/l1rikcontrolbot" target="_blank" rel="noopener"><small>Telegram bot</small><b>@l1rikcontrolbot</b></a>
+  <a href="mailto:support@l1rik.com"><small>Email</small><b>support@l1rik.com</b></a>
+ </div>
+</section></div>
+<footer><div class="wrap"><span data-k="risk">Trading carries a high risk: you can lose the money you invest. Past results do not guarantee future results.</span><span>© 2026 L1rik</span></div></footer>
+<script>
+{const T={
+ru:{"prh": "Наши роботы", "prp": "Два робота для MetaTrader 5. Каждый перед выпуском проходит тест на истории с 2020 года и проверку Монте-Карло.", "g1p": "Робот для золота, Bitcoin и Ethereum, рассчитанный на стабильный долгосрочный рост. Стоп-лосс в каждой сделке, дневной лимит убытка и лимит просадки.", "s1p": "Робот на пробой дневного диапазона для золота, Bitcoin и Ethereum. Риск распределён на три рынка, каждая сделка защищена стоп-лоссом.", "prl": "Цена", "prs": "Скоро", "buy": "Купить за криптовалюту", "payh": "Оплата — только криптовалютой", "payp": "USDT (TRC-20, BEP-20), BTC и ETH через защищённую страницу криптооплаты. Онлайн-оплата скоро откроется — пока оформляйте заказ через наш Telegram-бот @l1rikcontrolbot.",mtag:'БЭКТЕСТ · СИМУЛЯЦИЯ',mh:'Результат по месяцам · депозит $5 000 · январь 2025 – октябрь 2026',tall:'Все',mnote:'Компьютерная симуляция на исторических данных Exness. Фиксированный лот (от $5 000, прибыль не реинвестируется), комиссия и своп не учтены. Результаты для цент-счёта ($500) будут добавлены позже.',s1h:'Долгосрочный и системный подход',s1p:'L1rik открывает и закрывает каждую сделку по заранее заданным правилам. Результат оценивается не за день или неделю, а за месяцы и годы.',c1h:'Строгие правила',c1p:'Вход, выход и риск заданы заранее. Без эмоций, спешки и догадок.',c2h:'Долгий срок',c2p:'Некоторые дни и месяцы закрываются в минус — это нормально. Система построена на общий результат за годы.',c3h:'Контроль риска',c3p:'Стоп-лосс в каждой сделке, дневной лимит убытка и лимит общей просадки.',c4h:'Три актива',c4p:'Золото, Bitcoin и Ethereum — риск не привязан к одному рынку.',s2h:'Результаты бэктеста',s2p:'Тест в тестере стратегий MetaTrader 5 на исторических данных брокера Exness.',b1h:'XAUUSD · 2020–2026 · прибыль по годам',st1:'всего за 6,9 года',st2:'макс. просадка',st3:'профит-фактор',st4:'сделок',st5:'чистая прибыль',st6:'прибыльных сделок',n1:'Начальный баланс $10 000, фиксированный лот (прибыль не реинвестируется). *2026 — с 1 января по ноябрь.',b2h:'XAUUSD + BTCUSD + ETHUSD · 2026',n2:'1 января – 17 ноября 2026, начальный баланс $10 000, фиксированный лот, 3 428 сделок. Результат также проверен случайным перемешиванием (Монте-Карло).',warn:'<b>Важно:</b> эти цифры — бэктест, проверка робота на исторических данных, а не результат реального счёта. На реальном рынке из-за спреда, проскальзывания и исполнения результат может отличаться. Результаты реального счёта будут опубликованы на этой странице позже.',s3h:'Контакты',s3p:'Есть вопросы — напишите, мы ответим.',ctab:'Связаться',h1:'Автоматическая торговля <em>золотом и криптовалютой</em>',lead:'L1rik — торговый робот для MetaTrader 5. Работает круглосуточно на XAUUSD, BTCUSD и ETHUSD, защищает каждую сделку стоп-лоссом и показывает результаты в Telegram и личном кабинете. Это не способ быстро разбогатеть, а <b>долгосрочная система</b>, которая годами работает по одним и тем же правилам.',p3:'Контроль в Telegram',p4:'Лимиты риска',soon:'Личный кабинет и продажи скоро',chart:'Декоративный график — не реальный результат',r1:'автоматически',r2:'в каждой сделке',r3:'защита',risk:'Торговля связана с высоким риском: вы можете потерять вложенные средства. Прошлые результаты не гарантируют будущих.'},
+en:{mtag:'BACKTEST · SIMULATION',mh:'Month by month · $5,000 deposit · January 2025 – October 2026',tall:'All',mnote:'Computer simulation on Exness historical data. Fixed lot (based on $5,000, profits not reinvested), commission and swap not included. Cent account ($500) results will be added later.',s1h:'A long-term, systematic approach',s1p:'L1rik opens and closes every trade by fixed, predefined rules. Results are judged over months and years, not a single day or week.',c1h:'Fixed rules',c1p:'Entry, exit and risk are set in advance. No emotion, no rushing, no guessing.',c2h:'Long term',c2p:'Some days and months close at a loss — that is normal. The system is built for the overall result over years.',c3h:'Risk control',c3p:'A stop loss on every trade, plus daily loss and overall drawdown limits.',c4h:'Three assets',c4p:'Gold, Bitcoin and Ethereum — risk is not tied to a single market.',s2h:'Backtest results',s2p:'Tested in the MetaTrader 5 strategy tester on Exness historical data.',b1h:'XAUUSD · 2020–2026 · profit by year',st1:'total over 6.9 years',st2:'max drawdown',st3:'profit factor',st4:'trades',st5:'net profit',st6:'winning trades',n1:'Starting balance $10,000, fixed lot (profits not reinvested). *2026 — January 1 to November.',b2h:'XAUUSD + BTCUSD + ETHUSD · 2026',n2:'January 1 – November 17, 2026, starting balance $10,000, fixed lot, 3,428 trades. Also checked with random reshuffling (Monte Carlo).',warn:'<b>Important:</b> these figures are a backtest — the robot tested on historical data, not a live account result. Live results may differ because of spread, slippage and execution. Live account results will be published on this page later.',s3h:'Contact',s3p:'Have a question? Write to us and we will reply.',ctab:'Contact us',h1:'<em>Automated trading</em> for gold and crypto',lead:'L1rik is a trading robot for MetaTrader 5. It runs around the clock on XAUUSD, BTCUSD and ETHUSD, protects every trade with a stop loss and reports results in Telegram and your personal dashboard. It is not a get-rich-quick tool — it is a <b>long-term system</b> that follows the same rules year after year.',p3:'Telegram control',p4:'Risk limits',soon:'Personal dashboard and sales coming soon',chart:'Decorative chart — not real results',r1:'automated',r2:'on every trade',r3:'protection',risk:'Trading carries a high risk: you can lose the money you invest. Past results do not guarantee future results.'}};
+const U={};document.querySelectorAll('[data-k]').forEach(e=>U[e.dataset.k]=e.innerHTML);T.en=U;
+const set=l=>{const d=T[l];document.querySelectorAll('[data-k]').forEach(e=>{if(d[e.dataset.k])e.innerHTML=d[e.dataset.k];else e.innerHTML=U[e.dataset.k]});
+ document.documentElement.lang=l;document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l==l));try{localStorage.setItem('l1lang',l)}catch(e){};window.l1mo&&l1mo()};
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>set(b.dataset.l));
+let s='en';try{s=localStorage.getItem('l1lang')||(navigator.language||'').slice(0,2)}catch(e){} if(T[s]&&s!='en')set(s);}
+
+{const D={"m":["2025-01","2025-02","2025-03","2025-04","2025-05","2025-06","2025-07","2025-08","2025-09","2025-10","2025-11","2025-12","2026-01","2026-02","2026-03","2026-04","2026-05","2026-06","2026-07","2026-08","2026-09","2026-10"],"XAU":[273,-326,951,2298,452,-6,221,25,3120,337,335,2099,1730,362,2144,393,314,1721,-3,-10,380,180],"BTC":[93,337,-120,413,123,-129,694,-257,-588,533,4,-36,257,338,29,-594,-188,217,27,1825,881,145],"ETH":[-37,1270,851,1073,943,1019,1811,629,463,1194,-246,662,686,549,904,-104,1501,1396,240,-51,510,723]},MN={ru:['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],en:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']},
+L={ru:['Всего прибыль','Прибыль (к депозиту)','Прибыльные месяцы','Худший месяц'],en:['Total profit','Profit (on deposit)','Winning months','Worst month']};
+let cur='ALL';const f=v=>(v<0?'−':'+')+'$'+Math.abs(v).toLocaleString('en-US');
+const ser=s=>s=='ALL'?D.m.map((_,i)=>D.XAU[i]+D.BTC[i]+D.ETH[i]):D[s];
+window.l1mo=()=>{const lg=document.documentElement.lang||'en',v=ser(cur),tot=v.reduce((a,b)=>a+b,0),w=v.filter(x=>x>0).length,mn=Math.min(...v),l=L[lg]||L.en;
+ document.getElementById('mst').innerHTML=`<div><b>${f(tot)}</b><small>${l[0]}</small></div><div><b>+${Math.round(tot/50)}%</b><small>${l[1]}</small></div><div><b>${w}/${v.length}</b><small>${l[2]}</small></div><div><b>${f(mn)}</b><small>${l[3]}</small></div>`;
+ const mm=D.m.map(x=>(MN[lg]||MN.en)[+x.slice(5)-1]+' '+x.slice(2,4));
+ document.getElementById('mgr').innerHTML=v.map((x,i)=>`<div class="${x>=0?'p':'n'}"><small>${mm[i]}</small><b>${f(x)}</b> <i>${(x>=0?'+':'')+(x/50).toFixed(1)}%</i></div>`).join('');
+ let b=5000,pts=[[0,b]];v.forEach((x,i)=>{b+=x;pts.push([i+1,b])});const mx=Math.max(...pts.map(p=>p[1])),mi=Math.min(5000,...pts.map(p=>p[1])),W=innerWidth<600?420:800,H=220,P=34;document.getElementById('mch').setAttribute('viewBox',`0 0 ${W} ${H}`);
+ const X=i=>P+i*(W-P-10)/v.length,Y=y=>H-24-(y-mi)/(mx-mi||1)*(H-50);const d=pts.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+' '+Y(p[1]).toFixed(1)).join(' ');
+ let g='';for(let k=0;k<=3;k++){const yv=mi+(mx-mi)*k/3;g+=`<line x1="${P}" x2="${W-10}" y1="${Y(yv)}" y2="${Y(yv)}" stroke="#232c52"/><text x="${P-4}" y="${Y(yv)+4}" fill="#8e9ac0" font-size="11" text-anchor="end">${Math.round(yv/1000)}k</text>`}
+ [0,12,v.length].forEach(i=>{if(i<=v.length)g+=`<text x="${X(i)}" y="${H-6}" fill="#8e9ac0" font-size="11" text-anchor="${i==0?'start':i==v.length?'end':'middle'}">${i==0?'2025':i==12?'2026':mm[v.length-1]}</text>`});
+ document.getElementById('mch').innerHTML=`<defs><linearGradient id="mg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7c5cff" stop-opacity=".4"/><stop offset="1" stop-color="#7c5cff" stop-opacity="0"/></linearGradient></defs>${g}<path d="${d} L${X(v.length)} ${H-24} L${X(0)} ${H-24}Z" fill="url(#mg)"/><path d="${d}" fill="none" stroke="#a78bfa" stroke-width="3" stroke-linejoin="round"/>`;};
+document.querySelectorAll('.tabs button').forEach(bt=>bt.onclick=()=>{cur=bt.dataset.s;document.querySelectorAll('.tabs button').forEach(x=>x.classList.toggle('on',x==bt));l1mo()});l1mo();addEventListener('resize',()=>l1mo());}
+</script>
+</body>
+</html>
