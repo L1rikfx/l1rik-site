@@ -208,14 +208,14 @@ document.querySelectorAll('.tabs button').forEach(bt=>bt.onclick=()=>{cur=bt.dat
 {const API='https://app.l1rik.com/api/pay/',NM={falcon:'L1rik Falcon',strix:'L1rik Strix'},M={en:{soon:'Coming soon',em:'Please enter a valid email.',tg:'Telegram username: 4–32 letters, digits or _.',gw:'Payment page is not available right now. Please try again later or write to our Telegram bot.',lim:'Too many attempts. Please try again in an hour.',wait:'Opening payment page…'},ru:{soon:'Скоро',em:'Введите корректный email.',tg:'Telegram username: 4–32 буквы, цифры или _.',gw:'Страница оплаты сейчас недоступна. Попробуйте позже или напишите нашему Telegram-боту.',lim:'Слишком много попыток. Попробуйте через час.',wait:'Открываем страницу оплаты…'}};
 const lg=()=>document.documentElement.lang=='ru'?'ru':'en';let P={},cur='';
 const showP=()=>document.querySelectorAll('[data-p]').forEach(e=>{const v=P[e.dataset.p];if(v)e.textContent='$'+v});
-fetch(API+'prices').then(r=>r.json()).then(j=>{P=j||{};showP()}).catch(()=>{});
+let FAIL=false;fetch(API+'prices').then(r=>r.json()).then(j=>{P=j||{};showP()}).catch(()=>{FAIL=true});
 const d=document.getElementById('buyd'),f=document.getElementById('buyf'),er=document.getElementById('bd-e'),go=document.getElementById('bd-go');
-document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{cur=b.dataset.buy;document.getElementById('bd-t').textContent=NM[cur];const v=P[cur];document.getElementById('bd-p').textContent=v?'$'+v:M[lg()].soon;er.textContent='';go.disabled=!v;go.style.opacity=v?1:.5;d.showModal()});
+document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{cur=b.dataset.buy;if(FAIL){window.open('https://t.me/l1rikcontrolbot?start=buy_'+cur,'_blank','noopener');return}document.getElementById('bd-t').textContent=NM[cur];const v=P[cur];document.getElementById('bd-p').textContent=v?'$'+v:M[lg()].soon;er.textContent='';go.disabled=!v;go.style.opacity=v?1:.5;d.showModal()});
 f.onsubmit=async e=>{e.preventDefault();const m=M[lg()],em=f.email.value.trim(),tg=f.tg.value.trim().replace(/^@/,'');
  if(!/^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i.test(em)){er.textContent=m.em;return}if(tg&&!/^[A-Za-z0-9_]{4,32}$/.test(tg)){er.textContent=m.tg;return}
  er.textContent=m.wait;go.disabled=true;
  try{const r=await fetch(API+'create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({robot:cur,email:em,tg})}),j=await r.json().catch(()=>({}));
-  if(j.url){location.href=j.url;return}er.textContent=r.status==429?m.lim:m.gw}catch(x){er.textContent=m.gw}go.disabled=false};
+  if(j.url){location.href=j.url;return}er.textContent=r.status==429?m.lim:m.gw}catch(x){er.innerHTML=m.gw+' <a href="https://t.me/l1rikcontrolbot?start=buy_'+cur+'" target="_blank" rel="noopener">@l1rikcontrolbot</a>'}go.disabled=false};
 if(/[?&]paid=/.test(location.search)){const b=document.getElementById('paidb');b.hidden=false;setTimeout(()=>b.hidden=true,15000)}}
 </script>
 </body>
