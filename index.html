@@ -216,7 +216,7 @@ f.onsubmit=async e=>{e.preventDefault();const m=M[lg()],em=f.email.value.trim(),
  er.textContent=m.wait;go.disabled=true;
  try{const r=await fetch(API+'create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({robot:cur,email:em,tg})}),j=await r.json().catch(()=>({}));
   if(j.url){location.href=j.url;return}er.textContent=r.status==429?m.lim:m.gw}catch(x){er.innerHTML=m.gw+' <a href="https://t.me/l1rikcontrolbot?start=buy_'+cur+'" target="_blank" rel="noopener">@l1rikcontrolbot</a>'}go.disabled=false};
-if(/[?&]paid=/.test(location.search)){const b=document.getElementById('paidb');b.hidden=false;setTimeout(()=>b.hidden=true,15000)}}
+if(/[?&]paid=/.test(location.search)){const b=document.getElementById('paidb');b.hidden=false;b.onclick=()=>b.hidden=true;setTimeout(()=>b.hidden=true,10000);try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}}}
 </script>
 </body>
 </html>
