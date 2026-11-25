@@ -21,6 +21,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
 /* VOICE: calm, confident, small. IDEA: a trading terminal at night. COLOUR: deep navy, violet accent, green/red ticks. TYPE: system sans. */
+.cartb{position:relative;display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:1px solid var(--line);border-radius:12px;color:var(--ink)}.cartb svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}#cartn{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:10px;background:var(--grn);color:#071018;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 5px}#cartn[hidden]{display:none}.hdr{display:flex;align-items:center;gap:10px}
 :root{--bg:#070b1a;--card:#0e1530;--line:#232c52;--ink:#eef2ff;--mut:#8e9ac0;--acc:#7c5cff;--acc2:#a78bfa;--grn:#26d086}
 *{box-sizing:border-box;margin:0}
 body{background:radial-gradient(1200px 600px at 80% -10%,#2a1f6b55,transparent),var(--bg);color:var(--ink);
@@ -138,7 +139,7 @@ footer{margin-top:clamp(64px,9vw,104px);border-top:1px solid var(--line)}footer 
 <div class="topbar"><div class="wrap"><header>
  <a class="logo" href="/" aria-label="L1rik"><svg viewBox="0 0 512 512" aria-hidden="true"><defs><linearGradient id="lg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset="1" stop-color="#4f2fd6"/></linearGradient></defs><rect width="512" height="512" rx="110" fill="url(#lg)"/><path d="M150 128v232h120M318 190l46-40v210" fill="none" stroke="#fff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><circle cx="396" cy="396" r="22" fill="#26d086"/></svg><b>L1rik<span>.</span></b></a>
  <nav class="nav" aria-label="Main"><a href="#h-sys" data-k="nv1">Approach</a><a href="#h-bt" data-k="nv2">Backtest</a><a href="#robots" data-k="nv3">Robots</a><a href="#aloqa" data-k="nv4">Contact</a></nav>
- <div class="hdr"><div class="lang" role="group" aria-label="Language"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div><a class="hcta" href="#robots" data-k="nv5">Choose a robot</a></div>
+ <div class="hdr"><div class="lang" role="group" aria-label="Language"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div><a class="cartb" href="/cart.html" aria-label="Cart"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 4h2l2.4 11h11L21 8H7"/><circle cx="10" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg><span id="cartn" hidden>0</span></a><a class="hcta" href="#robots" data-k="nv5">Choose a robot</a></div>
 </header></div></div>
 <div class="wrap" style="flex:1;display:flex"><main>
  <section>
@@ -270,7 +271,8 @@ const lg=()=>document.documentElement.lang=='ru'?'ru':'en';let P={falcon:499,str
 const showP=()=>document.querySelectorAll('[data-p]').forEach(e=>{const v=P[e.dataset.p];if(v)e.textContent='$'+v});
 let FAIL=false;showP();fetch(API+'prices',{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&typeof j=='object')P=j;showP()}).catch(()=>{FAIL=true});
 const d=document.getElementById('buyd'),f=document.getElementById('buyf'),er=document.getElementById('bd-e'),go=document.getElementById('bd-go');
-document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{cur=b.dataset.buy;document.getElementById('bd-t').textContent=NM[cur];const v=P[cur];document.getElementById('bd-p').textContent=v?'$'+v:M[lg()].soon;er.textContent='';go.disabled=!v;go.style.opacity=v?1:.5;d.showModal();if(FAIL)er.innerHTML=M[lg()].net+' <a href="https://t.me/l1rikcontrolbot?start=buy_'+cur+'" target="_blank" rel="noopener">@l1rikcontrolbot</a>'});
+/* 2026-11-25: Buy = add to cart (localStorage l1cart), then the cart page */document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{let c=[];try{c=JSON.parse(localStorage.getItem('l1cart')||'[]')}catch(e){}if(!c.includes(b.dataset.buy))c.push(b.dataset.buy);try{localStorage.setItem('l1cart',JSON.stringify(c))}catch(e){}location.href='/cart.html'});
+if(0)document.querySelectorAll('[data-buy]').forEach(b=>b.onclick=()=>{cur=b.dataset.buy;document.getElementById('bd-t').textContent=NM[cur];const v=P[cur];document.getElementById('bd-p').textContent=v?'$'+v:M[lg()].soon;er.textContent='';go.disabled=!v;go.style.opacity=v?1:.5;d.showModal();if(FAIL)er.innerHTML=M[lg()].net+' <a href="https://t.me/l1rikcontrolbot?start=buy_'+cur+'" target="_blank" rel="noopener">@l1rikcontrolbot</a>'});
 f.onsubmit=async e=>{e.preventDefault();const m=M[lg()],em=f.email.value.trim(),tg=f.tg.value.trim().replace(/^@/,'');
  if(!f.acc.checked){er.textContent=m.acc;return}if(!/^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i.test(em)){er.textContent=m.em;return}if(tg&&!/^[A-Za-z0-9_]{4,32}$/.test(tg)){er.textContent=m.tg;return}
  er.textContent=m.wait;go.disabled=true;
@@ -279,5 +281,6 @@ f.onsubmit=async e=>{e.preventDefault();const m=M[lg()],em=f.email.value.trim(),
 if(/[?&]paid=/.test(location.search)){const b=document.getElementById('paidb');b.hidden=false;b.onclick=()=>b.hidden=true;setTimeout(()=>b.hidden=true,10000);try{history.replaceState(null,'',location.pathname+location.hash)}catch(e){}}}
 </script>
 <script>window.l1x=l=>{const D={en:'L1rik — Automated trading robots for MetaTrader 5: gold and crypto.',ru:'L1rik — автоматические торговые роботы для MetaTrader 5: золото и криптовалюта.'},A={en:n=>n+' balance chart',ru:n=>'График баланса '+n},N={falcon:'L1rik Falcon',strix:'L1rik Strix'};const k=l=='ru'?'ru':'en';document.querySelector('meta[name=description]').setAttribute('content',D[k]);document.querySelectorAll('[data-aria]').forEach(e=>e.setAttribute('aria-label',A[k](N[e.dataset.aria])))};window.l1x(document.documentElement.lang)</script>
+<script>try{const n=JSON.parse(localStorage.getItem('l1cart')||'[]').length,e=document.getElementById('cartn');if(n){e.textContent=n;e.hidden=false}}catch(e){}</script>
 </body>
 </html>

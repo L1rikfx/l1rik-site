@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cart — L1rik</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070b1a">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* Cart page (2026-11-25). Cart lives in localStorage "l1cart" until sign-in exists; then it moves to the server per user. */
+:root{--bg:#070b1a;--card:#0e1530;--line:#232c52;--ink:#eef2ff;--mut:#8e9ac0;--acc:#7c5cff;--acc2:#a78bfa;--grn:#26d086;--red:#ff7a7a}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(1200px 600px at 80% -10%,#2a1f6b55,transparent),var(--bg);color:var(--ink);font-family:Geist,system-ui,sans-serif;font-size:16px;min-height:100vh}
+a{color:var(--acc2)}a:hover{color:#c4b5fd}
+.wrap{max-width:760px;margin:0 auto;padding:0 20px}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:22px 0}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;font-size:22px;color:var(--ink);text-decoration:none}.logo span{color:var(--acc2)}.logo svg{width:34px;height:34px}
+.lang{display:flex;gap:6px}.lang button{background:transparent;border:1px solid var(--line);color:var(--mut);border-radius:9px;padding:7px 11px;font:600 13px inherit;cursor:pointer;min-width:44px;min-height:36px}.lang button.on{background:var(--acc);border-color:var(--acc);color:#fff}
+h1{font-size:34px;margin:10px 0 18px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 20px;margin-bottom:14px}
+.it{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.it b{font-size:19px}.mut{color:var(--mut);font-size:14px}
+.btn{height:48px;padding:0 22px;border-radius:999px;border:0;background:var(--acc);color:#fff;font:600 15px inherit;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;text-decoration:none}
+.btn.gh{background:transparent;border:1px solid var(--line);color:var(--ink)}
+.btn:disabled{opacity:.5;cursor:default}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.tot{display:flex;justify-content:space-between;font-size:20px;font-weight:700;padding-top:14px;border-top:1px solid var(--line);margin-top:6px}
+label{display:block;margin:12px 0}label small{display:block;color:var(--mut);margin-bottom:6px}
+input[type=email],input[type=text]{width:100%;height:46px;border-radius:12px;border:1px solid var(--line);background:#070b1a;color:var(--ink);padding:0 14px;font:inherit}
+.err{color:var(--red);min-height:22px;font-size:14px}
+.note{color:var(--mut);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <a class="logo" href="/" aria-label="L1rik home"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="#6d4dff"/><path d="M150 128v232h120M318 190l46-40v210" fill="none" stroke="#fff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><circle cx="396" cy="396" r="22" fill="#26d086"/></svg><b>L1rik<span>.</span></b></a>
+ <div class="lang" role="group" aria-label="Language"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div>
+</header>
+<main>
+ <h1 data-k="h">Your cart</h1>
+ <div id="list"></div>
+ <section class="card" id="payc" hidden>
+  <b data-k="ph">Checkout</b>
+  <p class="note" data-k="pn">Each robot is paid separately on the secure crypto payment page (NOWPayments). Sign-in with Google or an email code is coming soon; until then enter your email here.</p>
+  <form id="f">
+   <label><small data-k="fem">Email — the robot will be sent here</small><input type="email" name="email" required maxlength="120" autocomplete="email"></label>
+   <label><small data-k="ftg">Telegram username (optional)</small><input type="text" name="tg" maxlength="33" placeholder="@username"></label>
+   <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" name="acc" required style="width:20px;height:20px;margin-top:2px;flex:none"><small data-k="facc">I have read and accept the <a href="/terms.html" target="_blank">Terms of sale</a> and <a href="/privacy.html" target="_blank">Privacy policy</a>, and I understand that trading carries a high risk of loss.</small></label>
+   <p class="err" id="e" role="alert"></p>
+   <div class="row" id="paybtns"></div>
+   <p class="note" data-k="fag">Digital product: no refund after delivery.</p>
+  </form>
+ </section>
+</main>
+</div>
+<script>
+{const API='https://app.l1rik.com/api/pay/',NM={falcon:'L1rik Falcon',strix:'L1rik Strix'};let P={falcon:499,strix:299};/* fallback prices: keep equal to index.html / Cloudflare PRICE_* */
+const T={en:{h:'Your cart',ph:'Checkout',pn:'Each robot is paid separately on the secure crypto payment page (NOWPayments). Sign-in with Google or an email code is coming soon; until then enter your email here.',fem:'Email — the robot will be sent here',ftg:'Telegram username (optional)',fag:'Digital product: no refund after delivery.',empty:'Your cart is empty.',back:'Choose a robot',rm:'Remove',tot:'Total',pay:'Pay for',em:'Please enter a valid email.',tg:'Telegram username: 4–32 letters, digits or _.',acc:'Please confirm that you accept the Terms of sale and Privacy policy.',wait:'Opening payment page…',gw:'Payment page is not available right now. Please try again later or buy in our Telegram bot:',lim:'Too many attempts. Please try again in an hour.',soon:'Coming soon',lic:'Licence for one MT5 account'},
+ru:{h:'Ваша корзина',ph:'Оформление',pn:'Каждый робот оплачивается отдельно на защищённой странице криптооплаты (NOWPayments). Вход через Google или код на email появится скоро; пока укажите email здесь.',fem:'Email — сюда придёт робот',ftg:'Telegram username (необязательно)',fag:'Цифровой товар: возврат после выдачи невозможен.',empty:'Корзина пуста.',back:'Выбрать робота',rm:'Удалить',tot:'Итого',pay:'Оплатить',em:'Введите корректный email.',tg:'Telegram username: 4–32 буквы, цифры или _.',acc:'Подтвердите, что вы принимаете Условия продажи и Политику конфиденциальности.',wait:'Открываем страницу оплаты…',gw:'Страница оплаты сейчас недоступна. Попробуйте позже или купите в нашем Telegram-боте:',lim:'Слишком много попыток. Попробуйте через час.',soon:'Скоро',lic:'Лицензия на один счёт MT5'}};
+let L='en';try{L=localStorage.getItem('l1lang')||'en'}catch(e){}if(!T[L])L='en';
+const get=()=>{try{return JSON.parse(localStorage.getItem('l1cart')||'[]').filter(x=>NM[x])}catch(e){return[]}},put=c=>{try{localStorage.setItem('l1cart',JSON.stringify(c))}catch(e){}};
+const $=s=>document.querySelector(s),f=$('#f'),er=$('#e');
+function draw(){const m=T[L],c=get();document.documentElement.lang=L;document.querySelectorAll('[data-k]').forEach(e=>{const v=m[e.dataset.k];if(v!=null)e.innerHTML=v.replace('Terms of sale','<a href="/terms.html" target="_blank">Terms of sale</a>')});
+ if(L=='ru')$('[data-k=facc]').innerHTML='Я прочитал(а) и принимаю <a href="/terms.html" target="_blank">Условия продажи</a> и <a href="/privacy.html" target="_blank">Политику конфиденциальности</a> и понимаю, что торговля связана с высоким риском потерь.';
+ else $('[data-k=facc]').innerHTML='I have read and accept the <a href="/terms.html" target="_blank">Terms of sale</a> and <a href="/privacy.html" target="_blank">Privacy policy</a>, and I understand that trading carries a high risk of loss.';
+ document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l==L));
+ if(!c.length){$('#list').innerHTML='<section class="card"><p>'+m.empty+'</p><a class="btn" href="/#robots">'+m.back+'</a></section>';$('#payc').hidden=true;return}
+ let t=0,h='<section class="card">';for(const x of c){const v=P[x];t+=v||0;h+='<div class="it" style="padding:8px 0"><div><b>'+NM[x]+'</b><div class="mut">'+m.lic+'</div></div><div class="row"><b>'+(v?'$'+v:m.soon)+'</b><button class="btn gh" type="button" data-rm="'+x+'">'+m.rm+'</button></div></div>'}
+ h+='<div class="tot"><span>'+m.tot+'</span><span>$'+t+'</span></div></section>';$('#list').innerHTML=h;$('#payc').hidden=false;
+ $('#paybtns').innerHTML=c.map(x=>'<button class="btn" type="button" data-pay="'+x+'"'+(P[x]?'':' disabled')+'>'+m.pay+' '+NM[x]+'</button>').join('')}
+document.addEventListener('click',async ev=>{const b=ev.target.closest('button');if(!b)return;
+ if(b.dataset.l){L=b.dataset.l;try{localStorage.setItem('l1lang',L)}catch(e){}draw();return}
+ if(b.dataset.rm){put(get().filter(x=>x!=b.dataset.rm));draw();return}
+ if(b.dataset.pay){const m=T[L],em=f.email.value.trim(),tg=f.tg.value.trim().replace(/^@/,''),cur=b.dataset.pay;
+  if(!/^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i.test(em)){er.textContent=m.em;return}if(tg&&!/^[A-Za-z0-9_]{4,32}$/.test(tg)){er.textContent=m.tg;return}if(!f.acc.checked){er.textContent=m.acc;return}
+  er.textContent=m.wait;b.disabled=true;
+  try{const r=await fetch(API+'create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({robot:cur,email:em,tg,accept:true})}),j=await r.json().catch(()=>({}));
+   if(j.url){put(get().filter(x=>x!=cur));location.href=j.url;return}er.textContent=r.status==429?m.lim:m.gw}
+  catch(x){er.innerHTML=m.gw+' <a href="https://t.me/l1rikcontrolbot?start=buy_'+cur+'" target="_blank" rel="noopener">@l1rikcontrolbot</a>'}b.disabled=false}});
+draw();fetch(API+'prices',{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&typeof j=='object'){P=j;draw()}}).catch(()=>{});}
+</script>
+</body>
+</html>
