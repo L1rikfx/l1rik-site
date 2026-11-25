@@ -31,7 +31,7 @@ const fm=v=>v==null||isNaN(v)?'--':Number(v).toLocaleString('en-US',{minimumFrac
 async function call(op){const r=await fetch(API+op,{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify({lang:L})});const j=await r.json().catch(()=>({}));if(r.status==401||j.error=='need2'){location.href='/login.html?next=/account.html';throw new Error('login')}if(!r.ok)throw new Error(j.error||'net');return j}
 function draw(){const m=T[L];document.documentElement.lang=L;$('h').textContent=m.h;document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l==L));if(!D)return;
  let h='<section class="card"><div class="it"><div><div class="mut">'+m.em+'</div><b>'+esc(D.email)+'</b></div><button class="btn gh" id="out" type="button">'+m.out+'</button></div>';
- h+='<div class="it" style="margin-top:14px"><div><div class="mut">'+m.tg+'</div><b class="'+(D.tg?'ok':'')+'">'+(D.tg?m.tgon:m.tgoff)+'</b></div>'+(D.tg?'<button class="btn gh" id="tgu" type="button">'+m.tgu+'</button>':'<button class="btn" id="tgb" type="button">'+m.tgb+'</button>')+'</div>'+(D.tg?'':'<p class="note">'+m.tgn+'</p>')+'</section>';
+ if(D.role!='owner')h+='<div class="it" style="margin-top:14px"><div><div class="mut">'+m.tg+'</div><b class="'+(D.tg?'ok':'')+'">'+(D.tg?m.tgon:m.tgoff)+'</b></div>'+(D.tg?'<button class="btn gh" id="tgu" type="button">'+m.tgu+'</button>':'<button class="btn" id="tgb" type="button">'+m.tgb+'</button>')+'</div>'+(D.tg?'':'<p class="note">'+m.tgn+'</p>');h+='</section>';
  if(D.role=='owner')h+='<section class="card"><p>'+m.adm+'</p></section>';
  h+='<section class="card"><b>'+m.acc+'</b>';
  if(!D.accounts.length)h+='<p class="mut">'+m.none+'</p>';
