@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Sign in — L1rik</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#070b1a">
+<link rel="icon" href="/logo.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/site.css">
+</head>
+<body>
+<div class="wrap">
+<header>
+ <a class="logo" href="/" aria-label="L1rik home"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="#6d4dff"/><path d="M150 128v232h120M318 190l46-40v210" fill="none" stroke="#fff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><circle cx="396" cy="396" r="22" fill="#26d086"/></svg><b>L1rik<span>.</span></b></a>
+ <div class="lang" role="group" aria-label="Language"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div>
+</header>
+<main>
+ <h1 id="h">Sign in</h1>
+ <section class="card">
+  <form id="f1">
+   <p class="mut" id="p1">Enter your email. We will send you a one-time sign-in code — no password needed. A new account is created automatically.</p>
+   <label><small id="l1">Email</small><input type="email" id="em" required maxlength="120" autocomplete="email"></label>
+   <p class="err" id="e1" role="alert"></p>
+   <button class="btn" id="b1" type="submit">Send code</button>
+  </form>
+  <form id="f2" class="hide">
+   <p class="mut" id="p2">We sent a 6-digit code to your email. It is valid for 10 minutes. Check the Spam folder too.</p>
+   <label><small id="l2">Code from the email</small><input class="code" id="cd" inputmode="numeric" autocomplete="one-time-code" maxlength="6" required></label>
+   <p class="err" id="e2" role="alert"></p>
+   <div class="row"><button class="btn" id="b2" type="submit">Sign in</button><button class="btn gh" id="bk" type="button">Change email</button></div>
+  </form>
+  <form id="f3" class="hide">
+   <p class="mut" id="p3">Admin sign-in: enter the second code sent to your Telegram (Admin bot).</p>
+   <label><small id="l3">Code from Telegram</small><input class="code" id="c3" inputmode="numeric" maxlength="6" required></label>
+   <p class="err" id="e3" role="alert"></p>
+   <button class="btn" id="b3" type="submit">Confirm</button>
+  </form>
+ </section>
+ <p class="note" id="nt">By signing in you accept the <a href="/terms.html">Terms of sale</a> and <a href="/privacy.html">Privacy policy</a>.</p>
+</main>
+</div>
+<script>
+{const API='https://app.l1rik.com/api/auth/';
+const T={en:{h:'Sign in',p1:'Enter your email. We will send you a one-time sign-in code — no password needed. A new account is created automatically.',l1:'Email',b1:'Send code',p2:'We sent a 6-digit code to your email. It is valid for 10 minutes. Check the Spam folder too.',l2:'Code from the email',b2:'Sign in',bk:'Change email',p3:'Admin sign-in: enter the second code sent to your Telegram (Admin bot).',l3:'Code from Telegram',b3:'Confirm',nt:'By signing in you accept the <a href="/terms.html">Terms of sale</a> and <a href="/privacy.html">Privacy policy</a>.',
+ email:'Please enter a valid email.',limit:'Too many attempts. Please try again in an hour.',mail:'Could not send the email right now. Please try again later.',code:'Wrong code. Please check and try again.',expired:'The code has expired. Request a new one.',net:'The server could not be reached from your network. Try again or use mobile data.',wait:'Please wait…'},
+ru:{h:'Вход',p1:'Введите email. Мы отправим одноразовый код входа — пароль не нужен. Новый аккаунт создаётся автоматически.',l1:'Email',b1:'Отправить код',p2:'Мы отправили 6-значный код на ваш email. Код действует 10 минут. Проверьте и папку «Спам».',l2:'Код из письма',b2:'Войти',bk:'Изменить email',p3:'Вход администратора: введите второй код, отправленный в Telegram (Admin bot).',l3:'Код из Telegram',b3:'Подтвердить',nt:'Входя, вы принимаете <a href="/terms.html">Условия продажи</a> и <a href="/privacy.html">Политику конфиденциальности</a>.',
+ email:'Введите корректный email.',limit:'Слишком много попыток. Попробуйте через час.',mail:'Не удалось отправить письмо. Попробуйте позже.',code:'Неверный код. Проверьте и попробуйте снова.',expired:'Срок действия кода истёк. Запросите новый.',net:'Сервер недоступен из вашей сети. Попробуйте ещё раз или используйте мобильный интернет.',wait:'Подождите…'}};
+let L='en';try{L=localStorage.getItem('l1lang')||'en'}catch(e){}if(!T[L])L='en';
+const $=i=>document.getElementById(i),next=(()=>{const n=new URLSearchParams(location.search).get('next')||'/account.html';return /^\/[\w./-]*$/.test(n)?n:'/account.html'})();
+function draw(){document.documentElement.lang=L;for(const k of ['h','p1','l1','b1','p2','l2','b2','bk','p3','l3','b3','nt'])$(k).innerHTML=T[L][k];document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l==L))}
+document.querySelectorAll('.lang button').forEach(b=>b.onclick=()=>{L=b.dataset.l;try{localStorage.setItem('l1lang',L)}catch(e){}draw()});
+async function call(op,body){const r=await fetch(API+op,{method:'POST',credentials:'include',headers:{'content-type':'application/json'},body:JSON.stringify(Object.assign({lang:L},body))});const j=await r.json().catch(()=>({}));if(!r.ok)throw new Error(j.error||'net');return j}
+const show=n=>['f1','f2','f3'].forEach((f,i)=>$(f).classList.toggle('hide',i!=n));
+const err=(id,e)=>{$(id).textContent=T[L][e.message]||T[L].net};
+$('f1').onsubmit=async e=>{e.preventDefault();$('e1').textContent=T[L].wait;$('b1').disabled=true;try{await call('start',{email:$('em').value.trim()});$('e1').textContent='';show(1);$('cd').focus()}catch(x){err('e1',x)}$('b1').disabled=false};
+$('f2').onsubmit=async e=>{e.preventDefault();$('e2').textContent=T[L].wait;$('b2').disabled=true;try{const j=await call('verify',{email:$('em').value.trim(),code:$('cd').value});if(j.need2){$('e2').textContent='';show(2);$('c3').focus()}else location.href=next}catch(x){err('e2',x)}$('b2').disabled=false};
+$('f3').onsubmit=async e=>{e.preventDefault();$('e3').textContent=T[L].wait;$('b3').disabled=true;try{await call('verify2',{code:$('c3').value});location.href=next}catch(x){err('e3',x);if(x.message=='expired')show(0)}$('b3').disabled=false};
+$('bk').onclick=()=>{show(0);$('cd').value=''};
+draw();}
+</script>
+</body>
+</html>

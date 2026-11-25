@@ -32,22 +32,21 @@ input[type=email],input[type=text]{width:100%;height:46px;border-radius:12px;bor
 .err{color:var(--red);min-height:22px;font-size:14px}
 .note{color:var(--mut);font-size:13px}
 </style>
+<link rel="stylesheet" href="/site.css">
 </head>
 <body>
 <div class="wrap">
 <header>
  <a class="logo" href="/" aria-label="L1rik home"><svg viewBox="0 0 512 512" aria-hidden="true"><rect width="512" height="512" rx="110" fill="#6d4dff"/><path d="M150 128v232h120M318 190l46-40v210" fill="none" stroke="#fff" stroke-width="52" stroke-linecap="round" stroke-linejoin="round"/><circle cx="396" cy="396" r="22" fill="#26d086"/></svg><b>L1rik<span>.</span></b></a>
- <div class="lang" role="group" aria-label="Language"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div>
+ <div class="row"><a class="acct" href="/account.html" aria-label="My cabinet"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg></a><div class="lang" role="group" aria-label="Language"><button data-l="en" class="on">EN</button><button data-l="ru">RU</button></div></div>
 </header>
 <main>
  <h1 data-k="h">Your cart</h1>
  <div id="list"></div>
  <section class="card" id="payc" hidden>
   <b data-k="ph">Checkout</b>
-  <p class="note" data-k="pn">Each robot is paid separately on the secure crypto payment page (NOWPayments). Sign-in with Google or an email code is coming soon; until then enter your email here.</p>
+  <p class="note" data-k="pn">Each robot is paid separately on the secure crypto payment page (NOWPayments). You need to sign in first (email code, no password).</p>
   <form id="f">
-   <label><small data-k="fem">Email — the robot will be sent here</small><input type="email" name="email" required maxlength="120" autocomplete="email"></label>
-   <label><small data-k="ftg">Telegram username (optional)</small><input type="text" name="tg" maxlength="33" placeholder="@username"></label>
    <label style="display:flex;gap:10px;align-items:flex-start;cursor:pointer"><input type="checkbox" name="acc" required style="width:20px;height:20px;margin-top:2px;flex:none"><small data-k="facc">I have read and accept the <a href="/terms.html" target="_blank">Terms of sale</a> and <a href="/privacy.html" target="_blank">Privacy policy</a>, and I understand that trading carries a high risk of loss.</small></label>
    <p class="err" id="e" role="alert"></p>
    <div class="row" id="paybtns"></div>
@@ -58,8 +57,8 @@ input[type=email],input[type=text]{width:100%;height:46px;border-radius:12px;bor
 </div>
 <script>
 {const API='https://app.l1rik.com/api/pay/',NM={falcon:'L1rik Falcon',strix:'L1rik Strix'};let P={falcon:499,strix:299};/* fallback prices: keep equal to index.html / Cloudflare PRICE_* */
-const T={en:{h:'Your cart',ph:'Checkout',pn:'Each robot is paid separately on the secure crypto payment page (NOWPayments). Sign-in with Google or an email code is coming soon; until then enter your email here.',fem:'Email — the robot will be sent here',ftg:'Telegram username (optional)',fag:'Digital product: no refund after delivery.',empty:'Your cart is empty.',back:'Choose a robot',rm:'Remove',tot:'Total',pay:'Pay for',em:'Please enter a valid email.',tg:'Telegram username: 4–32 letters, digits or _.',acc:'Please confirm that you accept the Terms of sale and Privacy policy.',wait:'Opening payment page…',gw:'Payment page is not available right now. Please try again later or buy in our Telegram bot:',lim:'Too many attempts. Please try again in an hour.',soon:'Coming soon',lic:'Licence for one MT5 account'},
-ru:{h:'Ваша корзина',ph:'Оформление',pn:'Каждый робот оплачивается отдельно на защищённой странице криптооплаты (NOWPayments). Вход через Google или код на email появится скоро; пока укажите email здесь.',fem:'Email — сюда придёт робот',ftg:'Telegram username (необязательно)',fag:'Цифровой товар: возврат после выдачи невозможен.',empty:'Корзина пуста.',back:'Выбрать робота',rm:'Удалить',tot:'Итого',pay:'Оплатить',em:'Введите корректный email.',tg:'Telegram username: 4–32 буквы, цифры или _.',acc:'Подтвердите, что вы принимаете Условия продажи и Политику конфиденциальности.',wait:'Открываем страницу оплаты…',gw:'Страница оплаты сейчас недоступна. Попробуйте позже или купите в нашем Telegram-боте:',lim:'Слишком много попыток. Попробуйте через час.',soon:'Скоро',lic:'Лицензия на один счёт MT5'}};
+const T={en:{h:'Your cart',ph:'Checkout',pn:'Each robot is paid separately on the secure crypto payment page (NOWPayments). You need to sign in first (email code, no password).',fem:'Email — the robot will be sent here',ftg:'Telegram username (optional)',fag:'Digital product: no refund after delivery.',empty:'Your cart is empty.',back:'Choose a robot',rm:'Remove',tot:'Total',pay:'Pay for',em:'Please enter a valid email.',tg:'Telegram username: 4–32 letters, digits or _.',acc:'Please confirm that you accept the Terms of sale and Privacy policy.',wait:'Opening payment page…',gw:'Payment page is not available right now. Please try again later or buy in our Telegram bot:',lim:'Too many attempts. Please try again in an hour.',soon:'Coming soon',lic:'Licence for one MT5 account'},
+ru:{h:'Ваша корзина',ph:'Оформление',pn:'Каждый робот оплачивается отдельно на защищённой странице криптооплаты (NOWPayments). Сначала нужно войти (код на email, без пароля).',fem:'Email — сюда придёт робот',ftg:'Telegram username (необязательно)',fag:'Цифровой товар: возврат после выдачи невозможен.',empty:'Корзина пуста.',back:'Выбрать робота',rm:'Удалить',tot:'Итого',pay:'Оплатить',em:'Введите корректный email.',tg:'Telegram username: 4–32 буквы, цифры или _.',acc:'Подтвердите, что вы принимаете Условия продажи и Политику конфиденциальности.',wait:'Открываем страницу оплаты…',gw:'Страница оплаты сейчас недоступна. Попробуйте позже или купите в нашем Telegram-боте:',lim:'Слишком много попыток. Попробуйте через час.',soon:'Скоро',lic:'Лицензия на один счёт MT5'}};
 let L='en';try{L=localStorage.getItem('l1lang')||'en'}catch(e){}if(!T[L])L='en';
 const get=()=>{try{return JSON.parse(localStorage.getItem('l1cart')||'[]').filter(x=>NM[x])}catch(e){return[]}},put=c=>{try{localStorage.setItem('l1cart',JSON.stringify(c))}catch(e){}};
 const $=s=>document.querySelector(s),f=$('#f'),er=$('#e');
@@ -74,10 +73,10 @@ function draw(){const m=T[L],c=get();document.documentElement.lang=L;document.qu
 document.addEventListener('click',async ev=>{const b=ev.target.closest('button');if(!b)return;
  if(b.dataset.l){L=b.dataset.l;try{localStorage.setItem('l1lang',L)}catch(e){}draw();return}
  if(b.dataset.rm){put(get().filter(x=>x!=b.dataset.rm));draw();return}
- if(b.dataset.pay){const m=T[L],em=f.email.value.trim(),tg=f.tg.value.trim().replace(/^@/,''),cur=b.dataset.pay;
-  if(!/^[^\s@<>]+@[^\s@<>]+\.[a-z]{2,}$/i.test(em)){er.textContent=m.em;return}if(tg&&!/^[A-Za-z0-9_]{4,32}$/.test(tg)){er.textContent=m.tg;return}if(!f.acc.checked){er.textContent=m.acc;return}
+ if(b.dataset.pay){const m=T[L],cur=b.dataset.pay;
+  if(!f.acc.checked){er.textContent=m.acc;return}
   er.textContent=m.wait;b.disabled=true;
-  try{const r=await fetch(API+'create',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({robot:cur,email:em,tg,accept:true})}),j=await r.json().catch(()=>({}));
+  try{const r=await fetch(API+'create',{method:'POST',headers:{'content-type':'application/json'},credentials:'include',body:JSON.stringify({robot:cur,accept:true})}),j=await r.json().catch(()=>({}));if(r.status==401){location.href='/login.html?next=/cart.html';return}
    if(j.url){put(get().filter(x=>x!=cur));location.href=j.url;return}er.textContent=r.status==429?m.lim:m.gw}
   catch(x){er.innerHTML=m.gw+' <a href="https://t.me/l1rikcontrolbot?start=buy_'+cur+'" target="_blank" rel="noopener">@l1rikcontrolbot</a>'}b.disabled=false}});
 draw();fetch(API+'prices',{cache:'no-store'}).then(r=>r.json()).then(j=>{if(j&&typeof j=='object'){P=j;draw()}}).catch(()=>{});}
