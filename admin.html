@@ -49,6 +49,7 @@ label{font-size:12px;color:var(--mut);display:block;margin:8px 0 4px}
 #toast{position:fixed;right:20px;bottom:20px;background:#fff;border:1px solid var(--bd);border-radius:12px;padding:12px 16px;box-shadow:0 8px 30px rgba(20,22,43,.15);display:none;z-index:9}
 body.hide .money{filter:blur(7px)}
 #m.accpg{font-size:15.5px}#m.accpg table{font-size:15px}#m.accpg .mut{font-size:14px}#m.accpg h2{font-size:17px}#m.accpg .kl{font-size:14px}#m.accpg .pill{font-size:13px}
+.lvl{border:1px solid var(--bd);border-radius:12px;padding:12px 14px;margin-top:8px;background:#fff}.lvl details{display:inline-block}.lvl summary{cursor:pointer}.pxbar{display:flex;justify-content:space-between;align-items:center;background:var(--pur);color:#fff;border-radius:10px;padding:10px 14px;margin-top:8px;font-weight:600}
 .pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}.pcard{border:1px solid var(--bd);border-radius:12px;padding:12px 14px;background:#fff}
 .trk2{position:relative;height:8px;border-radius:5px;margin-top:10px;background:linear-gradient(90deg,#C23B22,#D5D8E6 45%,#0E8A4F)}.trk2 i{position:absolute;top:-4px;width:4px;height:16px;border-radius:2px;background:var(--navy);transform:translateX(-50%)}
 th .srt{all:unset;cursor:pointer;font-weight:600;color:var(--mut)}th .srt:hover{color:var(--txt)}th .srt:focus-visible{outline:2px solid var(--pur);border-radius:4px}th[aria-sort=ascending] .srt,th[aria-sort=descending] .srt{color:var(--pur)}
@@ -147,17 +148,27 @@ function card(o,dg,px,bal,isOrd){const buy=/BUY/.test(o.s||o.type||""),lo=Math.m
  ${pos!=null?`<div class="trk2" aria-hidden="true"><i style="left:${slLeft?pos:100-pos}%"></i></div>`:""}
  <div class="row" style="margin-top:6px"><span class="r">SL ${o.sl>0?n(o.sl):"<b>yo'q ⚠️</b>"}</span><span style="text-align:center">${isOrd?"Narx "+n(o.op):`Oxirgi narx <b>${n(px)}</b><br><small class="mut">kirish ${n(o.op)}</small>`}</span><span class="g">TP ${o.tp>0?n(o.tp):"yo'q"}</span></div>
  <div style="margin-top:6px">${riskTxt(o._rk,bal)}</div></div>`}
-function accP(R){const vpu=vpuOf(ACCD.robots),P=[],O=[],dg={},px={},a=D.accounts.find(x=>String(x.login)===ACC)||{},bal=+a.bal||0;
- for(const r of R){const x=r.state,sy=x.sym||"";dg[sy]=(x.mk&&x.mk.dg)||2;px[sy]=x.mk&&(x.mk.bid||x.mk.ask)||0;
-  (x.pos||[]).forEach(p=>P.push({sym:sy,...p,_rk:p.sl>0?(vpu[sy]?(/BUY/.test(p.s)?(p.op-p.sl):(p.sl-p.op))*p.lot*vpu[sy]:undefined):null}));
-  (x.ord||[]).forEach(o=>O.push({sym:sy,...o,_rk:o.sl>0?(o.rk>0?o.rk:undefined):null}))}
- const tot=P.reduce((s,p)=>s+(p._rk>0?p._rk:0),0)+O.reduce((s,o)=>s+(o._rk>0?o._rk:0),0),unl=P.some(p=>p._rk===null)||O.some(o=>o._rk===null),fl=P.reduce((s,p)=>s+(+p.pl||0),0);
- let h=`<div class="grid k">${kpi("Ochiq pozitsiyalar",P.length,'<span class="money '+pc(fl)+'">'+sg(fl)+"</span>")}${kpi("Kutilayotgan orderlar",O.length)}${kpi("Jami ochiq risk",'<span class="money">$'+fm(tot)+"</span>",(bal>0?fm(tot/bal*100)+"% balansdan":"")+(unl?' · <span class="r">SL siz savdo bor ⚠️</span>':""))}</div>`;
- for(const b of["Kanal","Swing","Sessiya","Breakout","Boshqa"]){const bp=P.filter(p=>LB(p.leg)===b);if(!bp.length)continue;const f=bp.reduce((x,p)=>x+(+p.pl||0),0);
-  h+=`<section class="card"><div class="row"><h2>${b} · ${bp.length} ta</h2><b class="money ${pc(f)}">${sg(f)}</b></div><div class="pgrid">${bp.map(p=>card(p,dg[p.sym],px[p.sym],bal,false)).join("")}</div></section>`}
- if(!P.length)h+=`<section class="card mut">Ochiq pozitsiya yo'q.</section>`;
- h+=`<section class="card"><h2>Kutilayotgan orderlar · ${O.length} ta</h2>${O.length?`<div class="pgrid">${O.sort((x,y)=>(x.sym+String(+x.op||0)).localeCompare(y.sym+String(+y.op||0))).map(o=>card(o,dg[o.sym],px[o.sym],bal,true)).join("")}</div>`:'<div class="mut">Pending order yo\'q.</div>'}${O.some(o=>o._rk===undefined)?'<div class="mut" style="margin-top:6px">Ba\'zi orderlarda robot risk summasini yubormagan.</div>':""}<div class="mut" style="margin-top:6px">Ochiq pozitsiya riski taxminiy (shu para narxidan hisoblangan); robotlarning keyingi versiyasida aniq bo'ladi.</div></section>`;
- return h}
+function accP(R){const vpu=vpuOf(ACCD.robots),a=D.accounts.find(x=>String(x.login)===ACC)||{},bal=+a.bal||0,S={};
+ for(const r of R){const x=r.state,sy=x.sym||"",g=S[sy]||(S[sy]={sy,P:[],O:[],dg:(x.mk&&x.mk.dg)||2,px:x.mk&&(x.mk.bid||x.mk.ask)||0});
+  (x.pos||[]).forEach(p=>g.P.push({sym:sy,...p,_rk:p.sl>0?(vpu[sy]?(/BUY/.test(p.s)?(p.op-p.sl):(p.sl-p.op))*p.lot*vpu[sy]:undefined):null}));
+  (x.ord||[]).forEach(o=>g.O.push({sym:sy,...o,_rk:o.sl>0?(o.rk>0?o.rk:undefined):null}))}
+ const G=Object.values(S);let tot=0,unl=false,fl=0,np=0,no=0;for(const g of G){for(const p of g.P){tot+=p._rk>0?p._rk:0;unl=unl||p._rk===null;fl+=+p.pl||0;np++}for(const o of g.O){tot+=o._rk>0?o._rk:0;unl=unl||o._rk===null;no++}}
+ let h=`<div class="grid k">${kpi("Ochiq pozitsiyalar",np,'<span class="money '+pc(fl)+'">'+sg(fl)+"</span>")}${kpi("Kutilayotgan orderlar",no)}${kpi("Jami ochiq risk",'<span class="money">$'+fm(tot)+"</span>",(bal>0?fm(tot/bal*100)+"% balansdan":"")+(unl?' · <span class="r">SL siz savdo bor ⚠️</span>':""))}</div>`;
+ const pxBar=(g)=>`<div class="pxbar"><span>Hozirgi narx</span><b>${g.px?Number(g.px).toFixed(g.dg):"—"}</b></div>`,dist=(g,pr)=>g.px&&pr?(pr-g.px)/g.px*100:null;
+ for(const g of G.sort((x,y)=>x.sy.localeCompare(y.sy))){if(!g.P.length&&!g.O.length)continue;const f=g.P.reduce((x,p)=>x+(+p.pl||0),0),n=v=>v>0?Number(v).toFixed(g.dg):"—";
+  h+=`<section class="card"><div class="row"><h2 style="margin:0">${esc(g.sy)}</h2><span class="mut">${g.P.length} pozitsiya · ${g.O.length} order${g.P.length?` · <b class="money ${pc(f)}">${sg(f)}</b>`:""}</span></div>`;
+  if(g.P.length){const B=g.P.filter(p=>/BUY/.test(p.s)).sort((x,y)=>y.op-x.op),Sl=g.P.filter(p=>!/BUY/.test(p.s)).sort((x,y)=>y.op-x.op);
+   const pc1=p=>`<div class="lvl"><div class="row"><span><b class="${/BUY/.test(p.s)?"g":"r"}">${esc(p.s)}</b> <b>${n(p.op)}</b> <span class="mut">· ${esc(p.leg||"")} · ${fm(p.lot)} lot</span></span><b class="money ${pc(p.pl)}" style="font-size:17px">${sg(+p.pl||0)}</b></div><div class="row mut" style="margin-top:4px"><span class="r">SL ${p.sl>0?n(p.sl):"<b>yo'q ⚠️</b>"}</span><span>${riskTxt(p._rk,bal)}</span><span class="g">TP ${p.tp>0?n(p.tp):"yo'q"}</span></div></div>`;
+   h+=`<h2 style="margin-top:14px">Pozitsiyalar</h2>${B.map(pc1).join("")}${pxBar(g)}${Sl.map(pc1).join("")}`}
+  if(g.O.length){const L={};for(const o of g.O){const k=(o.s||o.type||"")+"|"+(+o.op).toFixed(g.dg),l=L[k]||(L[k]={t:o.s||o.type||"",pr:+o.op,O:[]});l.O.push(o)}
+   const lv=Object.values(L).sort((x,y)=>y.pr-x.pr);let put=false,oh="";
+   for(const l of lv){if(!put&&g.px&&l.pr<g.px){oh+=pxBar(g);put=true}const lot=l.O.reduce((x,o)=>x+(+o.lot||0),0),rk=l.O.reduce((x,o)=>x+(o._rk>0?o._rk:0),0),nosl=l.O.some(o=>o._rk===null),d=dist(g,l.pr);
+    oh+=`<div class="lvl"><div class="row"><span><b class="${/BUY/.test(l.t)?"g":"r"}">${esc(l.t)}</b> <b>${n(l.pr)}</b></span><span class="mut">${d==null?"":(d>0?"+":"")+fm(d)+"%"}</span></div><div class="row" style="margin-top:4px"><span class="mut">${l.O.length} order · ${fm(lot)} lot</span><span>${nosl?'<span class="r">risk cheklanmagan ⚠️</span>':`risk <b class="money r">${fm(rk)}</b>${bal>0?` <span class="mut">(${fm(rk/bal*100)}%)</span>`:""}`}</span><details><summary class="mut">oyoqlar</summary><div class="lst" style="margin-top:6px">${l.O.map(o=>`<div><span>${esc(o.leg||"—")} · ${LB(o.leg)} · ${fm(o.lot)} lot</span><span class="mut">SL ${n(o.sl)} · TP ${n(o.tp)}${o._rk>0?" · $"+fm(o._rk):""}</span></div>`).join("")}</div></details></div></div>`}
+   if(!put)oh+=pxBar(g);
+   h+=`<div class="row" style="margin-top:14px"><h2 style="margin:0">Kutilayotgan orderlar</h2><span class="mut">${lv.length} daraja</span></div>${oh}`}
+  h+="</section>"}
+ if(!np&&!no)h+=`<section class="card mut">Ochiq pozitsiya va order yo'q.</section>`;
+ return h+'<div class="mut">Ochiq pozitsiya riski taxminiy (shu para narxidan hisoblangan); robotlarning keyingi versiyasida aniq bo\'ladi.</div>'}
 function accHi(R){let h="";for(const r of R){const x=r.state,P=x.rep;h+=`<section class="card"><h2>${esc(x.sym||r.rid)} · ${esc(x.name||RB[x.robot==="strix"?"strix":"falcon"])}</h2>`;
   if(!P||!P.p){const o=agg();addSt(o,x.st);h+=`<div class="grid k">${kpi("Barcha vaqt",'<span class="money">'+sg(o.net)+"</span>",o.n+" savdo · WR "+wr(o),pc(o.net))}</div><div class="mut" style="margin-top:8px">Bu robot davrlar bo'yicha hisobot yubormaydi.</div></section>`;continue}
   h+=`<div class="grid k">${[["d","Bugun"],["w","Shu hafta"],["m","Shu oy"],["a","Barcha vaqt"]].map(([k,n])=>{const q=P.p[k]||{};return kpi(n,'<span class="money">'+sg(+q.net||0)+"</span>",(q.n||0)+" savdo"+(q.n?" · WR "+fm(100*q.w/q.n).replace(/\.00$/,"")+"%":""),pc(q.net))}).join("")}</div>`;
