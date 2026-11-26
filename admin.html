@@ -70,7 +70,7 @@ svg text{font-family:Inter,sans-serif}
 </div>
 <div id="toast" role="status"></div>
 <script>
-{const API="https://app.l1rik.com";
+{const API="https://api.l1rik.com";   /* Vercel bridge -> app.l1rik.com (ISP blocks Cloudflare) */
 let D=null,PL=null,TAB="d",SC="all",PER="m",Q="",ST="all",ACC="",HIDE=false,UG="client";
 try{HIDE=localStorage.getItem("l1hide")==="1"}catch(e){}
 const $=s=>document.querySelector(s),esc=x=>String(x==null?"":x).replace(/[<>&"]/g,c=>({"<":"&lt;",">":"&gt;","&":"&amp;",'"':"&quot;"}[c]));
