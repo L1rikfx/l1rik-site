@@ -197,7 +197,7 @@ function accU(Rb){const R=repData(),t=RD||R.today,[f,e]=rng(R,t),o=sumR(R,f,e),b
  <section class="card"><h2>Strategiyalar samaradorligi</h2>${stA.map(b=>{const z=o.st[b]||[0,0,0];return`<div style="margin:8px 0"><div class="row"><b>${b}</b><span class="money ${pc(z[1])}">${pct(z[1],b0)} ${sg(z[1])}</span></div><div class="bar2"><i style="width:${Math.abs(z[1])/mx*100}%;background:${z[1]>=0?"#6D4AFF":"#C23B22"}"></i></div><div class="mut" style="text-align:right;font-size:12px">${z[0]?fm(100*z[2]/z[0]).replace(/\.00$/,"")+"% yutuq · "+z[0]+" savdo":"—"}</div></div>`}).join("")}</section>
 </div>`;
  return h}
-function vpuOf(R){const v={};for(const r of R){const x=r.state,sy=x.sym||"";for(const o of(x.ord||[]))if(o.rk>0&&o.sl>0&&o.op>0&&o.lot>0){v[sy]=o.rk/(Math.abs(o.op-o.sl)*o.lot);break}
+function vpuOf(R){const v={};for(const r of R){const x=r.state,sy=x.sym||"";for(const o0 of(x.ord||[])){const o={...o0,op:+(o0.op||o0.pr)||0};if(o.rk>0&&o.sl>0&&o.op>0&&o.lot>0){v[sy]=o.rk/(Math.abs(o.op-o.sl)*o.lot);break}}
   if(!v[sy]){const px=x.mk&&x.mk.bid;for(const p of(x.pos||[]))if(px&&Math.abs(px-p.op)>0&&p.lot>0&&p.pl){const e=Math.abs(p.pl)/(Math.abs(px-p.op)*p.lot);if(isFinite(e)&&e>0){v[sy]=e;break}}}}return v}
 function riskTxt(rk,bal){if(rk==null)return'<span class="r">Risk: cheklanmagan ⚠️</span>';if(rk<=0)return'<span class="g">Risk yo\'q (SL foydada)</span>';return`Risk: <b class="money">$${fm(rk)}</b>${bal>0?` <span class="mut">(${fm(rk/bal*100)}%)</span>`:""}`}
 function card(o,dg,px,bal,isOrd){const buy=/BUY/.test(o.s||o.type||""),lo=Math.min(o.sl||0,o.tp||0),hi=Math.max(o.sl||0,o.tp||0),pos=o.sl>0&&o.tp>0&&px?Math.max(0,Math.min(100,(px-lo)/(hi-lo||1)*100)):null,slLeft=o.sl>0&&o.tp>0?o.sl<o.tp:buy;
@@ -209,7 +209,7 @@ function card(o,dg,px,bal,isOrd){const buy=/BUY/.test(o.s||o.type||""),lo=Math.m
 function accP(R){const vpu=vpuOf(ACCD.robots),a=D.accounts.find(x=>String(x.login)===ACC)||{},bal=+a.bal||0,S={};
  for(const r of R){const x=r.state,sy=x.sym||"",g=S[sy]||(S[sy]={sy,P:[],O:[],dg:(x.mk&&x.mk.dg)||2,px:x.mk&&(x.mk.bid||x.mk.ask)||0});
   (x.pos||[]).forEach(p=>g.P.push({sym:sy,...p,_rk:p.sl>0?(vpu[sy]?(/BUY/.test(p.s)?(p.op-p.sl):(p.sl-p.op))*p.lot*vpu[sy]:undefined):null}));
-  (x.ord||[]).forEach(o=>g.O.push({sym:sy,...o,_rk:o.sl>0?(o.rk>0?o.rk:undefined):null}))}
+  (x.ord||[]).forEach(o=>g.O.push({sym:sy,...o,op:+(o.op||o.pr)||0,_rk:o.sl>0?(o.rk>0?o.rk:undefined):null}))}
  const G=Object.values(S);let tot=0,unl=false,fl=0,np=0,no=0;for(const g of G){for(const p of g.P){tot+=p._rk>0?p._rk:0;unl=unl||p._rk===null;fl+=+p.pl||0;np++}for(const o of g.O){tot+=o._rk>0?o._rk:0;unl=unl||o._rk===null;no++}}
  let h=`<div class="grid k">${kpi("Ochiq pozitsiyalar",np,'<span class="money '+pc(fl)+'">'+sg(fl)+"</span>")}${kpi("Kutilayotgan orderlar",no)}${kpi("Jami ochiq risk",'<span class="money">$'+fm(tot)+"</span>",(bal>0?fm(tot/bal*100)+"% balansdan":"")+(unl?' · <span class="r">SL siz savdo bor ⚠️</span>':""))}</div>`;
  const pxBar=(g)=>`<div class="pxbar"><span>Hozirgi narx</span><b>${g.px?Number(g.px).toFixed(g.dg):"—"}</b></div>`,dist=(g,pr)=>g.px&&pr?(pr-g.px)/g.px*100:null;
